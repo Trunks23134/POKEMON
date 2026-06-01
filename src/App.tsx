@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import POKEMON_POOL, { Pokemon, Tier, ORIGINAL_RARE_IDS, fetchPokemonPool } from "./data/pokemon_pool";
+import POKEMON_POOL, { Pokemon, Tier, ORIGINAL_RARE_IDS } from "./data/pokemon_pool";
 type Phase = "IDLE" | "GRASS" | "FLASH" | "SILHOUETTE" | "THROW_READY" | "THROWING" | "SHAKING" | "CATCH" | "REVEAL" | "RESULT";
 type HistoryEntry = { pokemon: Pokemon; tier: Tier };
 
@@ -243,7 +243,7 @@ function ballShakeKeyframes() {
 }
 
 export default function CatchingStation() {
-  const [pokemonPool, setPokemonPool] = useState<Record<Tier, Pokemon[]>>(POKEMON_POOL);
+  const pokemonPool = POKEMON_POOL;
 
   function loadRarePool(): Pokemon[] {
     try {
@@ -267,30 +267,20 @@ export default function CatchingStation() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [tier, setTier] = useState<Tier | null>(null);
   const [rarePool, setRarePool] = useState<Pokemon[]>(() => loadRarePool());
-  // try to load remote pool if `VITE_POKEMON_POOL_URL` is provided at build/dev time
+
   useEffect(() => {
-    const remote = (import.meta as any).env?.VITE_POKEMON_POOL_URL as string | undefined;
-    if (!remote) return;
-    let mounted = true;
-    (async () => {
-      const pool = await fetchPokemonPool(remote);
-      if (!mounted) return;
-      setPokemonPool(pool);
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-          // no saved rare pool; adopt remote rare list
-          setRarePool([...pool.RARE]);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(pool.RARE.map((p) => p.id)));
-        }
-      } catch {
-        // ignore
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        const fullRare = [...POKEMON_POOL.RARE];
+        setRarePool(fullRare);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fullRare.map((p) => p.id)));
       }
-    })();
-    return () => {
-      mounted = false;
-    };
+    } catch {
+      // ignore
+    }
   }, []);
+
   const [grassAnimating, setGrassAnimating] = useState(false);
   const [flashCount, setFlashCount] = useState(0);
   const [currentShake, setCurrentShake] = useState(0);
