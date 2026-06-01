@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens (tune these to match the guide) */
+:root{
+	/* Display & body fonts */
+	--display-font: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	--body-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+
+	/* Color tokens */
+	--color-accent: #1FBDA0;
+	--color-alola: #4CAF50;
+	--color-rare-gold: #FFD700;
+	--color-rare-gold-overlay: rgba(255,215,0,0.92);
+	--color-card-bg: #0F1724;
+	--color-surface: #0B1220;
+	--color-text: #E6EEF3;
+	--color-muted: #9AA6B2;
+	--color-highlight: #FFF8E1;
+	--shadow-elev: 0 10px 30px rgba(2,6,23,0.6);
+
+	/* Backwards-compatible tokens used elsewhere in the app */
+	--bg: radial-gradient(circle at top, rgba(10,10,26,1), rgba(8,8,18,1) 55%, rgba(0,0,0,1));
+	--card-bg: rgba(0,0,0,0.65);
+	--card-bg-2: rgba(255,255,255,0.04);
+	--text: var(--color-text);
+	--muted: var(--color-muted);
+	--accent: var(--color-accent);
+	--alola-green: var(--color-alola);
+	--rare-gold: var(--color-rare-gold-overlay);
+}
+
+.light:root, .app-root.light {
+	--bg: radial-gradient(circle at top, rgba(249,250,252,1), rgba(241,245,249,1) 55%, rgba(255,255,255,1));
+	--card-bg: #ffffff;
+	--card-bg-2: rgba(0,0,0,0.04);
+	--text: #0f1724;
+	--muted: #475569;
+	--accent: #0ea5a4;
+}
+
+html,body,#root{height:100%;}
+body{margin:0;font-family:var(--body-font);color:var(--text);background:var(--bg)}
+
+.app-root{background:var(--bg);color:var(--text);font-family:var(--body-font)}
+
+/* Headings */
+h1,h2,h3,h4,h5{font-family:var(--heading-font);color:var(--text)}
+
+/* Generic overrides to make the Tailwind dark classes adapt to light theme */
+.app-root [class*="bg-black"]{background-color:var(--card-bg) !important}
+.app-root [class*="bg-white/5"]{background-color:var(--card-bg-2) !important}
+.app-root [class*="bg-white/10"]{background-color:var(--card-bg-2) !important}
+.app-root [class*="bg-black/"]{background-color:var(--card-bg) !important}
+.app-root [class*="text-white"]{color:var(--text) !important}
+.app-root .text-zinc-300{color:var(--muted) !important}
+.app-root .text-zinc-400{color:var(--muted) !important}
+
+/* Make borders visible in light theme */
+.app-root .border-white\/10{border-color:rgba(0,0,0,0.06) !important}
+
+/* Encounter flash: three quick white flashes in ~0.5s */
+@keyframes encounterFlash {
+	0% { opacity: 0 }
+	6% { opacity: 1 }
+	20% { opacity: 0 }
+	26% { opacity: 1 }
+	40% { opacity: 0 }
+	46% { opacity: 1 }
+	60% { opacity: 0 }
+	100% { opacity: 0 }
+}
+.flash-anim{ animation: encounterFlash 0.5s linear forwards }
+
+/* Rare pre-reveal gold flash overlay */
+@keyframes rareGoldFlash {
+	0% { opacity: 0 }
+	30% { opacity: 0.85 }
+	60% { opacity: 0.85 }
+	100% { opacity: 0 }
+}
+.rare-gold-overlay{
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: radial-gradient(circle at center, rgba(255,215,0,0.60) 0%, rgba(255,215,0,0.30) 30%, rgba(255,215,0,0.05) 55%, transparent 80%);
+	mix-blend-mode: screen;
+	animation: rareFlash 450ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+@keyframes rareFlash{
+	0%{ opacity: 0; transform: scale(0.98); }
+	50%{ opacity: 1; transform: scale(1.02); filter: blur(0.6px); }
+	100%{ opacity: 0; transform: scale(1); }
+}
+
+/* Headings use display font */
+h1,h2,h3{ font-family: var(--display-font); font-weight:700; color: var(--color-text); }
+body{ color: var(--color-text); background: linear-gradient(180deg,var(--color-card-bg),#000); font-family:var(--body-font); }
+
+/* Standard card used across the right-hand column and panels */
+.card-common{
+	border-radius: 1rem;
+	border: 1px solid rgba(255,255,255,0.06);
+	background: rgba(255,255,255,0.03);
+	padding: 1rem;
+	box-shadow: var(--shadow-elev);
+	backdrop-filter: blur(6px);
+}
+
+/* Buttons */
+.btn-accent{
+	border-radius: 0.75rem;
+	padding: 0.65rem 1.25rem;
+	font-weight: 700;
+	background: linear-gradient(180deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 70%, black 10%));
+	color: #0b1220;
+	box-shadow: 0 8px 30px rgba(31,189,160,0.12);
+}
+.btn-amber{
+	border-radius: 0.75rem;
+	padding: 0.65rem 1.25rem;
+	font-weight: 700;
+	background: linear-gradient(180deg,#fbbf24,#f59e0b);
+	color: #0b1220;
+	box-shadow: 0 8px 30px rgba(245,158,11,0.12);
+}
+
+/* Catch click starburst */
+.catch-burst{
+	width: 140px;
+	height: 140px;
+	border-radius: 50%;
+	background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(255,240,200,0.9) 30%, rgba(255,200,20,0.6) 55%, transparent 70%);
+	filter: blur(2px);
+	transform: scale(0.6);
+	animation: catchBurst 360ms ease-out forwards;
+}
+
+@keyframes catchBurst{
+	0%{ opacity: 0; transform: scale(0.5); }
+	40%{ opacity: 1; transform: scale(1.05); }
+	100%{ opacity: 0; transform: scale(1); }
+}
+
